@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do project</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js" defer></script>
+</head>
+<body>
+    <div class="flex">
+    <nav>
+        <h2>רשימת אנשים</h2>
+        <ul id="people">
+            <li>כולם</li>
+        </ul>
+    </nav>
+    <main>
+        <h2 id="taskName">רשימת המשימות של</h2>
+        <div id="filters" class="flex">
+            <h3>פילטרים:</h3>
+            <div id="toDate"><p>לפי תאריך</p></div>
+            <div id="toUrgency"><p>לפי חשיבות</p></div>
+            <div id="toCategory"><p>לפי קטגוריה</p></div>
+            <div id="toComplete"><p>לפי ביצוע משימה</p></div>
+            <div id="toReset"><p>אפס</p></div>
+        </div>
+        <ul id="tasks">
+            <!-- <li class="task">
+                <div>
+                    <div class="removeTask"></div>
+                    <div class="taskCategory"></div>
+                    <input type="checkbox" class="taskCheck">
+                    <span class="toDoTask"></span>
+                    <span class="toDoDate"></span>
+                    <div class="urgency urgent"></div>
+                </div>
+            </li> -->
+        </ul>
+    </main>
+    </div>
+    <footer>
+        <div>
+            <span>- made by Daniel Ingber -</span>
+        </div>
+    </footer>
+</body>
+</html>
