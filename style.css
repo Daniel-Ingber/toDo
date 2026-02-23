@@ -85,6 +85,18 @@ nav ul li:hover{
   box-shadow:0 10px 24px rgba(43,27,21,0.14);
 }
 
+#filters {
+  background:linear-gradient(180deg,var(--cream),rgba(255,247,238,0.6));
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:var(--shadow);
+  height:fit-content;
+}
+
+#filters button {
+  align-self: center;
+}
+
 /* --- MAIN CONTENT --- */
 main{
   flex:1;
@@ -262,6 +274,14 @@ footer{
   }
   .taskCategory{
     display:none;
+  }
+
+  main{
+    width: 100%;
+  }
+
+  #filters{
+    flex-direction: row;
   }
 }
 
