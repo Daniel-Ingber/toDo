@@ -8,17 +8,6 @@ const tasks = [];
 const currentTasks = [];
 let currentFilter;
 
-
-// API handling
-function fetchInitialTasks(){
-    fetch('https://jsonplaceholder.typicode.com/todos/5')
-        .then(response => response.json())
-        .then(json => console.log(json));
-}
-
-// task handling
-
-
 // the Task class
 // task {id:int,category:int,urgency:string,date:Date(),content:string,user:string}
 // Task1 = new Task(1,3,'medium',20/7/2025,'make breakfast','Omer Lael')
@@ -41,28 +30,45 @@ class Task {
         };
         this.checkUrgency = () => {
             if (this.urgency === "unurgent") { console.log(`task ${this.id} has been marked as Unurgent and has been skipped :)`); return;};
-
+            
             const now = new Date();
             const taskDate = new Date(this.date);
             const diffMs = taskDate.getTime() - now.getTime();
             const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
+            
             let autoUrgency;
-
+            
             // אם תג"ב משימה גדול בשבועיים אז הוא לא דחוף, אם גדול בשבוע אז הוא מתחיל להתקרב לתג"ב, אם הוא פחות משבוע אז הוא בעדיפות גבוהה, אם הוא אחרי או ביום התג"ב אז הוא דחוף
             if (diffDays > 14) autoUrgency = "low";
             else if (diffDays > 7) autoUrgency = "medium";
             else if (diffDays > 0) autoUrgency = "high";
             else autoUrgency = "urgent";
-
+            
             if (this.urgencyLevels[autoUrgency] > this.urgencyLevels[this.urgency]) {
                 this.urgency = autoUrgency;
             }
         };
-
+        
         this.checkUrgency();
     }
 }
+
+// API handling
+async function fetchInitialTasks() {
+    try {
+    // mock API built to suite object type
+    const apiCall = await fetch("https://daniel-ingber.github.io/APIS/toDoCallback/data.json");
+
+    const items = await apiCall.json();
+    items.forEach(task => {
+        tasks.push(new Task(...Object.values(task)));
+    });
+    displayTaskList(tasks);
+    } catch (err) {
+    console.error(err);
+    }
+}
+fetchInitialTasks();
 
 // PAGE BUILDING
 function displayTaskList(list){
@@ -124,9 +130,21 @@ function getCategoryIcon(category){
 }
 
 // filter the task array
-function filterTasks(filter){
-
+function filterTasks(key, value) {
+    if (value){
+    for (let i = tasks.length - 1; i >= 0; i--) {
+        if (tasks[i][key] !== value) tasks.splice(i, 1);
+    }
+    return tasks;
+    }
 }
+
+function returnFilteredTasks(key, value) {
+    return tasks.filter(task => task[key] === value);
+}
+
+
+
 
 // change the display order of the tasks
 function orderTasksBy(key){
@@ -143,6 +161,3 @@ function dateFormat(dateInput) {
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
 }
-
-for (let i=0;i<9;i++){let task = new Task(i, i+1, 'low', "2026-03-19", `${i}33`, 'Lael');tasks.push(task);};
-displayTaskList(tasks);
