@@ -19,23 +19,24 @@
             <button id="toComplete"><p>לפי ביצוע משימה</p></button>
             <button id="toReset"><p>אפס</p></button>
         </div>
+
         <ul id="tasks">
             <li><div><p>לא נמצא מה שרצית... אתה בטוח שזה קיים?</p></div></li>
-            <!-- <li class="task">
-                <div>
-                    <div class="taskCategory"></div>
-                    <input type="checkbox" class="taskCheck">
-                    <span class="toDoTask"></span>
-                    <span class="toDoDate"></span>
-                    <div class="urgency urgent"></div>
-                    <div class="removeTask"></div>
-                </div>
-            </li> -->
         </ul>
-        <button id="addTask"></button>
+
         <div id="newTask">
-            
+            <span>משימה:</span>
+            <input id="taskInput" type="text" placeholder="הוסף משימה..."/>
+            <span>מבצע:</span>
+            <input id="taskUser" type="text" placeholder="שם מבצע המשימה"/>
+            <span>חשיבות:</span>
+            <select id="taskUrgency"></select>
+            <span>נושא:</span>
+            <select id="taskIcon"></select>
+            <input id="taskDate" type="date"/>
+            <button id="addTask">הוסף משימה</button>
         </div>
+
     </main>
     </div>
     <footer>
