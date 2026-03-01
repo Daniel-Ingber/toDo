@@ -35,66 +35,68 @@ body{
   align-items:flex-start;
 }
 
-/* --- STICKY NAV --- */
-nav{
-  position:sticky;
-  top:20px;
-  min-width:180px;
-  max-width:260px;
-  background:linear-gradient(180deg,var(--cream),rgba(255,247,238,0.6));
-  border-radius:var(--radius);
-  padding:14px;
-  box-shadow:var(--shadow);
-  height:fit-content;
+/* Filter buttons — improved visual style */
+#filters button{
+  background: linear-gradient(90deg, rgba(191,160,137,0.98), rgba(217,160,102,0.98));
+  color: var(--espresso);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(43,27,21,0.10);
+  border: 1px solid rgba(107,74,58,0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
+  min-width: 120px;
+  line-height: 1;
 }
 
-nav h2{
-  text-align: center;
-  text-decoration: underline;
-  font-size: 1rem;
+/* Hover / pointer feedback (subtle) */
+#filters button:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(43,27,21,0.12);
+  filter: brightness(1.02);
 }
 
-nav ul{
-  list-style:none;
-  margin:0;
-  padding:8px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+/* Active / pressed */
+#filters button:active{
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(43,27,21,0.08);
+  filter: brightness(0.98);
 }
 
-nav ul li{
-  background:linear-gradient(90deg,var(--latte),var(--caramel));
-  color:var(--espresso);
-  padding:10px 14px;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:transform .18s ease, box-shadow .18s ease;
-  box-shadow:var(--glass-shadow);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+/* Focus for keyboard users */
+#filters button:focus{
+  outline: 3px solid rgba(107,74,58,0.14);
+  outline-offset: 3px;
+  box-shadow: 0 10px 26px rgba(107,74,58,0.06);
 }
 
-nav ul li:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 24px rgba(43,27,21,0.14);
+/* Small icon inside button (if you use SVG or <i>) */
+#filters button svg, #filters button i{
+  width: 18px;
+  height: 18px;
+  fill: var(--espresso);
+  flex: 0 0 18px;
 }
 
-#filters {
-  background:linear-gradient(180deg,var(--cream),rgba(255,247,238,0.6));
-  border-radius:var(--radius);
-  padding:16px;
-  box-shadow:var(--shadow);
-  height:fit-content;
+/* Variant: selected filter (toggle state) */
+#filters button.selected{
+  background: linear-gradient(90deg, var(--caramel), var(--accent));
+  color: #fff;
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(43,27,21,0.14);
 }
 
-#filters button {
-  align-self: center;
+/* Responsive tweak */
+@media (max-width:900px){
+  #filters button{ min-width: 110px; padding: 9px 12px; border-radius:10px; }
 }
 
 /* --- MAIN CONTENT --- */
@@ -126,18 +128,19 @@ main{
   border-radius:12px;
   padding:12px;
   box-shadow:var(--glass-shadow);
-  transition:transform .16s ease, box-shadow .16s ease;
   display:flex;
   align-items:center;
   justify-content:space-between;
   min-height:64px;
   border:1px solid rgba(107,74,58,0.06);
   width:100%;
+  transition:none; /* הסרת אנימציות */
 }
 
+/* הסרת hover על כרטיס משימה */
 .task:hover{
-  transform:translateY(-6px);
-  box-shadow:0 12px 28px rgba(43,27,21,0.08);
+  transform:none;
+  box-shadow:var(--glass-shadow);
 }
 
 .task > div{
@@ -174,7 +177,7 @@ main{
   display:grid;
   place-items:center;
   cursor:pointer;
-  transition:all .14s ease;
+  transition:none;
   flex:0 0 22px;
 }
 
@@ -184,7 +187,7 @@ main{
   height:12px;
   opacity:0;
   transform:scale(0.8);
-  transition:opacity .12s ease, transform .12s ease;
+  transition:none;
   background-repeat:no-repeat;
   background-position:center;
   background-size:contain;
@@ -220,7 +223,7 @@ main{
   font-weight:500;
 }
 
-.toDoDate{
+.toDoDate , .toDoUser{
   font-size:13px;
   color:var(--muted);
   background:rgba(107,74,58,0.06);
@@ -244,6 +247,11 @@ main{
 .urgency.high{background:linear-gradient(180deg,#ff9a76,#ff6b4a)}
 .urgency.urgent{background:linear-gradient(180deg,#ff6b4a,#c83a2a)}
 
+/* --- DELETE --- */
+.removeTask{
+  cursor: pointer;
+}
+
 /* --- FOOTER --- */
 footer{
   padding:18px 28px;
@@ -251,45 +259,3 @@ footer{
   color:var(--muted);
   font-size:13px;
 }
-
-/* --- RESPONSIVE --- */
-@media (max-width:900px){
-  .flex{
-    flex-direction:column;
-    padding:18px;
-    gap:18px;
-  }
-  nav{
-    width:100%;
-    max-width:none;
-    position:static;
-  }
-  nav ul{
-    flex-direction:row;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
-  nav ul li{
-    min-width:110px;
-  }
-  .taskCategory{
-    display:none;
-  }
-
-  main{
-    width: 100%;
-  }
-
-  #filters{
-    flex-direction: row;
-  }
-}
-
-@media (max-width:480px){
-  :root{--radius:10px}
-  .flex{padding:12px;gap:12px}
-  nav ul li{font-size:14px;padding:8px}
-  .toDoTask{font-size:14px}
-  .toDoDate{font-size:12px;padding:5px 6px}
-}
-

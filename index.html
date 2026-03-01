@@ -9,35 +9,26 @@
 </head>
 <body>
     <div class="flex">
-    <nav>
-        <h2>רשימת אנשים</h2>
-        <ul id="people">
-            <li>כולם</li>
-            <li>כולם</li>
-            <li>כולם</li>
-            <li>כולם</li>
-            <li>כולם</li>
-        </ul>
-    </nav>
     <main>
-        <h2 id="taskName">רשימת המשימות של</h2>
         <div id="filters" class="flex">
             <h3>פילטרים:</h3>
             <button id="toDate"><p>לפי תאריך</p></button>
             <button id="toUrgency"><p>לפי חשיבות</p></button>
             <button id="toCategory"><p>לפי קטגוריה</p></button>
+            <button id="toPerson"><p>לפי בעל משימה</p></button>
             <button id="toComplete"><p>לפי ביצוע משימה</p></button>
             <button id="toReset"><p>אפס</p></button>
         </div>
         <ul id="tasks">
+            <li><div><p>לא נמצא מה שרצית... אתה בטוח שזה קיים?</p></div></li>
             <!-- <li class="task">
                 <div>
-                    <div class="removeTask"></div>
                     <div class="taskCategory"></div>
                     <input type="checkbox" class="taskCheck">
                     <span class="toDoTask"></span>
                     <span class="toDoDate"></span>
                     <div class="urgency urgent"></div>
+                    <div class="removeTask"></div>
                 </div>
             </li> -->
         </ul>

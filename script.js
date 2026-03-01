@@ -7,6 +7,7 @@ const tasksList = document.querySelector('#tasks');
 const tasks = [];
 const currentTasks = [];
 let currentFilter;
+let currentId;
 
 // the Task class
 // task {id:int,category:int,urgency:string,date:Date(),content:string,user:string}
@@ -53,6 +54,7 @@ class Task {
     }
 }
 
+
 // API handling
 async function fetchInitialTasks() {
     try {
@@ -64,11 +66,13 @@ async function fetchInitialTasks() {
         tasks.push(new Task(...Object.values(task)));
     });
     displayTaskList(tasks);
+    currentId = findMaxID(tasks) + 1;
     } catch (err) {
     console.error(err);
     }
 }
 fetchInitialTasks();
+
 
 // PAGE BUILDING
 function displayTaskList(list){
@@ -88,7 +92,7 @@ function createTask(task){
 
     const category = document.createElement('div');
     category.className = 'taskCategory';
-    category.innerHTML = getCategoryIcon(task.category);
+    category.innerHTML = getIcon(task.category);
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -99,6 +103,10 @@ function createTask(task){
     content.className = 'toDoTask';
     content.textContent = task.content || '';
 
+    const user = document.createElement('span');
+    user.className = 'toDoUser';
+    user.textContent = task.user;
+
     const date = document.createElement('span');
     date.className = 'toDoDate';
     date.textContent = dateFormat(task.date);
@@ -107,11 +115,18 @@ function createTask(task){
     const urgencyLevel = (task.urgency || '').toString().toLowerCase();
     urgency.className = `urgency ${urgencyLevel}`.trim();
 
+    const remove = document.createElement('div');
+    remove.className = 'removeTask';
+    remove.innerHTML = getIcon(10);
+
     container.appendChild(category);
     container.appendChild(checkbox);
     container.appendChild(content);
+    container.appendChild(user);
+    if (date.innerHTML != '')
     container.appendChild(date);
     container.appendChild(urgency);
+    container.appendChild(remove);
 
     li.appendChild(container);
     tasksList.appendChild(li);
@@ -123,31 +138,21 @@ function clearTaskList(){
 
 
 // svg handling
-function getCategoryIcon(category){
+function getIcon(category){
     if (category > 0)
     return svgs[category-1].svg;
     else console.error("the function fillCategory only takes values starting from 1!");
 }
 
+
 // filter the task array
-function filterTasks(key, value) {
-    if (value){
-    for (let i = tasks.length - 1; i >= 0; i--) {
-        if (tasks[i][key] !== value) tasks.splice(i, 1);
-    }
-    return tasks;
-    }
-}
-
 function returnFilteredTasks(key, value) {
-    return tasks.filter(task => task[key] === value);
+    return currentTasks.filter(task => task[key] === value);
 }
-
-
 
 
 // change the display order of the tasks
-function orderTasksBy(key){
+function orderTasksBy(tasks, key){
 
 }
 
@@ -161,3 +166,14 @@ function dateFormat(dateInput) {
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
 }
+
+function findMaxID(arr){
+    return arr.length ? arr.slice().sort((a,b) => b.id - a.id)[0].id : undefined;
+}
+
+function removeTask(id){
+
+}
+
+
+// Event listeners
