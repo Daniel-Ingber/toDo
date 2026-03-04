@@ -5,11 +5,17 @@ import { svgs } from './svgs.js';
 const tasksList = document.querySelector('#tasks');
 
 const STORAGE_KEY = 'todoTasks';
+const currentFilter = {key:'',value:'', nofilter:true};
 const tasks = [];
-const currentTasks = [];
-let currentFilter;
+let currentTasks = [];
 let currentId;
 
+function syncCurrentTasks() {
+    currentTasks = tasks.slice();
+    if (!currentFilter.nofilter)
+        filterArray(currentTasks,currentFilter.key,currentFilter.value);
+    console.log(currentTasks);
+}
 
 // the Task class
 // task {id:int,category:int,urgency:string,date:Date(),content:string,user:string}
@@ -88,6 +94,7 @@ function createTask(task){
         if (t) {
             t.checked = checkbox.checked;
             saveToLocal();
+            syncCurrentTasks();
         }
     });
 
@@ -142,19 +149,6 @@ function getIcon(category){
     else console.error("the function fillCategory only takes values starting from 1!");
 }
 
-
-// filter the task array
-function returnFilteredTasks(key, value) {
-    return currentTasks.filter(task => task[key] === value);
-}
-
-
-// change the display order of the tasks
-function orderTasksBy(tasks, key){
-
-}
-
-
 // data helpers
 function dateFormat(dateInput) {
     const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
@@ -169,9 +163,198 @@ function findMaxID(arr){
     return arr.length ? arr.slice().sort((a,b) => b.id - a.id)[0].id : undefined;
 }
 
+function removeTask(id){
+    const idx = tasks.findIndex(task => String(task.id) === String(id));
+    if (idx === -1) return;
+    tasks.splice(idx, 1);
+    syncCurrentTasks();
+    saveToLocal();
+    if (!currentFilter.nofilter)
+        useFilter(currentFilter);
+    displayTaskList(currentTasks);
+}
+
+// Add task
+const urgencyOptions = [
+    { value: 'unurgent', label: 'לא חשוב' },
+    { value: 'low', label: 'חשיבות נמוכה' },
+    { value: 'medium', label: 'חשיבות בינונית' },
+    { value: 'high', label: 'חשיבות גבוהה' },
+    { value: 'urgent', label: 'קריטי' }
+];
+
+const iconOptions = [
+    { value: 1, label: 'מסמך' },
+    { value: 2, label: 'קוד' },
+    { value: 3, label: 'אוכל' },
+    { value: 4, label: 'בית' },
+    { value: 5, label: 'הנפצות' },
+    { value: 6, label: 'בריאות' },
+    { value: 7, label: 'כלכלה' },
+    { value: 8, label: 'למידה' },
+    { value: 9, label: 'חברתי' }
+];
+
+function populateSelect(selectId, options) {
+    const select = document.getElementById(selectId);
+    select.innerHTML = '';
+    options.forEach(opt => {
+        const el = document.createElement('option');
+        el.value = opt.value;
+        el.textContent = opt.label;
+        select.appendChild(el);
+    });
+}
+
+populateSelect('taskUrgency', urgencyOptions);
+populateSelect('taskIcon', iconOptions);
+
+const addButton = document.getElementById('addTask');
+const taskInput = document.getElementById('taskInput');
+const taskUser = document.getElementById('taskUser');
+const taskUrgency = document.getElementById('taskUrgency');
+const taskIcon = document.getElementById('taskIcon');
+const taskDate = document.getElementById('taskDate');
+
+function addTaskFromUI() {
+    const textInput = (taskInput.value || '').trim();
+    if (!textInput) return;
+    const userInput = (taskUser.value || '').trim();
+    if (!userInput) return;
+    const urgencyInput = taskUrgency.value;
+    const iconInput = taskIcon.value;
+    const dateInput = taskDate.value ? new Date(taskDate.value) : new Date();
+    const newTask = new Task(currentId, iconInput, urgencyInput, dateInput, textInput, userInput, false);
+    tasks.push(newTask);
+    syncCurrentTasks();
+    currentId += 1;
+    saveToLocal();
+    displayTaskList(currentTasks);
+    taskInput.value = '';
+    taskUser.value = '';
+    taskDate.value = '';
+    taskUrgency.value = 'unurgent';
+    taskIcon.value = 1;
+    taskInput.focus();
+}    
+
+addButton.addEventListener('click', addTaskFromUI);
+taskInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addTaskFromUI();
+});    
+
+
+function filterArray(arr, key, value) {
+    return arr.filter(obj => obj != null && obj[key] == value);
+}
+
+function resetFilters(){
+    currentFilter.key = '';
+    currentFilter.value = '';
+    currentFilter.nofilter = true;
+    syncCurrentTasks();
+    clearFilterContext();
+    displayTaskList(currentTasks);
+}
+
+function useFilter(filter){
+    syncCurrentTasks();
+    currentTasks = filterArray(currentTasks,filter.key ,filter.value);
+    currentFilter.key = filter.key;
+    currentFilter.value = filter.value;
+    displayTaskList(currentTasks);
+}
+
+function getUniquePeople() {
+    tasks.forEach(task => {
+        if (!personList.includes(task.user)){
+            personList.push(task.user);
+        }
+    });
+    console.log(personList)
+}
+
+function writeFilter(selector){
+    clearFilterContext();
+    selector.querySelector('.context').innerText = currentFilter.value;
+}
+
+function clearFilterContext(){
+    document.querySelectorAll('.context').forEach(div => div.innerHTML = '');
+}
+
+let personList = [];
+
+let currentCategory = 0;
+let currentUrgency = 0;
+let currentPerson = 0;
+let isComplete = false;
+
+const toUrgency = document.getElementById('toUrgency');
+const toCategory = document.getElementById('toCategory');
+const toComplete = document.getElementById('toComplete');
+const toPerson = document.getElementById('toPerson');
+const toReset = document.getElementById('toReset');
+
+toReset.addEventListener('click', () => {resetFilters();});
+toUrgency.addEventListener('click', () => {
+    currentFilter.nofilter = false;
+    currentFilter.key = 'urgency';
+    currentFilter.value = urgencyOptions[currentUrgency].value;
+    if (currentUrgency == urgencyOptions.length-1)
+        currentUrgency = 0;
+    else
+        currentUrgency++;
+    writeFilter(toUrgency);
+    useFilter(currentFilter);
+});
+
+toCategory.addEventListener('click', () => {
+    currentFilter.nofilter = false;
+    currentFilter.key = 'category';
+    currentFilter.value = iconOptions[currentCategory].value;
+    if (currentCategory == iconOptions.length-1)
+        currentCategory = 0;
+    else
+        currentCategory++;
+    writeFilter(toCategory);
+    useFilter(currentFilter);
+});
+
+toComplete.addEventListener('click', () => {
+    currentFilter.nofilter = false;
+    currentFilter.key = 'checked';
+    currentFilter.value = isComplete;
+    isComplete = !isComplete;
+    writeFilter(toComplete);
+    useFilter(currentFilter);
+});
+
+toPerson.addEventListener('click', () => {
+    currentFilter.nofilter = false;
+    currentFilter.key = 'user';
+    currentFilter.value = personList[currentPerson];
+    if (currentPerson == personList.length-1)
+        currentPerson = 0;
+    else
+        currentPerson++;
+    writeFilter(toPerson);
+    useFilter(currentFilter);
+});
+
 
 // Task loading
 async function fetchInitialTasks() {
+    if (localStorage.getItem(STORAGE_KEY)){
+        console.log('loaded from Local!');
+        loadFromLocal();
+        syncCurrentTasks();
+        getUniquePeople();
+        displayTaskList(currentTasks);
+        currentId = (findMaxID(tasks) || 0) + 1;
+        return;
+    }
+    console.log('loaded from API!');
     try {
         const apiCall = await fetch("https://daniel-ingber.github.io/APIS/toDoCallback/data.json");
         const items = await apiCall.json();
@@ -179,14 +362,15 @@ async function fetchInitialTasks() {
             tasks.push(new Task(...Object.values(task)));
         });
 
-        loadFromLocal();
-        displayTaskList(tasks);
+        syncCurrentTasks();
+        getUniquePeople();
+        displayTaskList(currentTasks);
         currentId = (findMaxID(tasks) || 0) + 1;
     } catch (err) {
         console.error(err);
 
-        loadFromLocal();
-        displayTaskList(tasks);
+        syncCurrentTasks();
+        displayTaskList(currentTasks);
         currentId = (findMaxID(tasks) || 0) + 1;
     }
 }
@@ -239,82 +423,3 @@ function loadFromLocal() {
         console.warn('Failed to load tasks from localStorage', e);
     }
 }
-
-function removeTask(id){
-    const idx = tasks.findIndex(task => String(task.id) === String(id));
-    if (idx === -1) return;
-    tasks.splice(idx, 1);
-    saveToLocal();
-    displayTaskList(tasks);
-}
-
-// Add task
-const urgencyOptions = [
-    { value: 'unurgent', label: 'לא חשוב' },
-    { value: 'low', label: 'חשיבות נמוכה' },
-    { value: 'medium', label: 'חשיבות בינונית' },
-    { value: 'high', label: 'חשיבות גבוהה' },
-    { value: 'urgent', label: 'קריטי' }
-];
-
-const iconOptions = [
-    { value: 1, label: 'מסמך' },
-    { value: 2, label: 'קוד' },
-    { value: 3, label: 'אוכל' },
-    { value: 4, label: 'בית' },
-    { value: 5, label: 'הנפצות' },
-    { value: 6, label: 'בריאות' },
-    { value: 7, label: 'כלכלה' },
-    { value: 8, label: 'למידה' },
-    { value: 9, label: 'חברתי' }
-];
-
-function populateSelect(selectId, options) {
-    const select = document.getElementById(selectId);
-    select.innerHTML = ''; // clear existing
-    options.forEach(opt => {
-        const el = document.createElement('option');
-        el.value = opt.value;
-        el.textContent = opt.label;
-        select.appendChild(el);
-    });
-}
-
-populateSelect('taskUrgency', urgencyOptions);
-populateSelect('taskIcon', iconOptions);
-
-const addButton = document.getElementById('addTask');
-const taskInput = document.getElementById('taskInput');
-const taskUser = document.getElementById('taskUser');
-const taskUrgency = document.getElementById('taskUrgency');
-const taskIcon = document.getElementById('taskIcon');
-const taskDate = document.getElementById('taskDate');
-
-
-function addTaskFromUI() {
-    const textInput = (taskInput.value || '').trim();
-    if (!textInput) return;
-    const userInput = (taskUser.value || '').trim();
-    if (!userInput) return;
-    const urgencyInput = taskUrgency.value;
-    const iconInput = taskIcon.value;
-    const dateInput = taskDate.value ? new Date(taskDate.value) : new Date();
-    const newTask = new Task(currentId, iconInput, urgencyInput, dateInput, textInput, userInput, false);
-    tasks.push(newTask);
-    currentId += 1;
-    saveToLocal();
-    displayTaskList(tasks);
-    taskInput.value = '';
-    taskUser.value = '';
-    taskDate.value = '';
-    taskUrgency.value = 'unurgent';
-    taskIcon.value = 1;
-    taskInput.focus();
-}    
-
-addButton.addEventListener('click', addTaskFromUI);
-taskInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addTaskFromUI();
-});    
-
-
