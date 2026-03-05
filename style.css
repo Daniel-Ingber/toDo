@@ -1,261 +1,580 @@
-:root{
-  --bg:#f6efe9;
-  --cream:#fff7ef;
-  --espresso:#2b1b15;
-  --mocha:#4b2e2a;
-  --latte:#bfa089;
-  --caramel:#d9a066;
-  --accent:#6b4a3a;
-  --muted:#7a6a63;
-  --glass:rgba(255,255,255,0.6);
-  --radius:12px;
-  --shadow:0 6px 18px rgba(43,27,21,0.12);
-  --glass-shadow:0 4px 12px rgba(43,27,21,0.06);
+/* ═══════════════════════════════════════════
+   IMPORT — Heebo works beautifully for Hebrew
+   ═══════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+
+/* ═══════════════════════════════════════════
+   ROOT TOKENS
+   ═══════════════════════════════════════════ */
+:root {
+  --bg:           #f6efe9;
+  --cream:        #fff7ef;
+  --espresso:     #2b1b15;
+  --mocha:        #4b2e2a;
+  --latte:        #bfa089;
+  --caramel:      #d9a066;
+  --accent:       #6b4a3a;
+  --muted:        #7a6a63;
+  --glass:        rgba(255,255,255,0.65);
+  --radius-sm:    8px;
+  --radius:       14px;
+  --radius-lg:    20px;
+  --shadow-sm:    0 2px 8px rgba(43,27,21,0.08);
+  --shadow:       0 6px 24px rgba(43,27,21,0.11);
+  --shadow-lg:    0 12px 40px rgba(43,27,21,0.15);
+  --border:       rgba(107,74,58,0.12);
+  --transition:   200ms cubic-bezier(0.4,0,0.2,1);
 }
 
-*{box-sizing:border-box}
+/* ═══════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-  margin:0;
-  font-family:Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-  background:linear-gradient(180deg,var(--bg),#efe6dd);
-  color:var(--espresso);
-  direction:rtl;
-  min-height:100vh;
-}
+html { scroll-behavior: smooth; }
 
-/* --- LAYOUT WRAPPER --- */
-.flex{
-  display:flex;
-  gap:28px;
-  padding:28px;
-  width:100%;
-  max-width:1200px;
-  margin:0 auto;
-  align-items:flex-start;
-}
-
-/* Filter buttons — improved visual style */
-#filters button{
-  background: linear-gradient(90deg, rgba(191,160,137,0.98), rgba(217,160,102,0.98));
+body {
+  font-family: 'Heebo', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(217,160,102,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(191,160,137,0.14) 0%, transparent 55%);
   color: var(--espresso);
-  padding: 10px 14px;
-  border-radius: 12px;
+  direction: rtl;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT WRAPPER
+   ═══════════════════════════════════════════ */
+.flex {
+  flex: 1;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vw, 36px) clamp(14px, 4vw, 28px);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CARD
+   ═══════════════════════════════════════════ */
+main {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255,255,255,0.75);
+  box-shadow: var(--shadow-lg);
+  padding: clamp(16px, 4vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION HEADERS (#filters h3, #sort h3)
+   ═══════════════════════════════════════════ */
+#filters h3,
+#sort h3 {
+  font-size: 11px;
   font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 14px rgba(43,27,21,0.10);
-  border: 1px solid rgba(107,74,58,0.12);
-  display: inline-flex;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* ═══════════════════════════════════════════
+   FILTER & SORT SECTIONS
+   ═══════════════════════════════════════════ */
+#filters,
+#sort {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  justify-content: center;
+}
+
+#filters h3,
+#sort h3 {
+  width: 100%;
+}
+
+/* ── Shared button base ── */
+#filters button,
+#sort button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 40px;           /* pill shape */
+  border: 1.5px solid var(--border);
+  background: rgba(255,255,255,0.72);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
   white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), box-shadow var(--transition),
+              transform var(--transition);
+  line-height: 1;
+  user-select: none;
+}
+
+#filters button:hover,
+#sort button:hover {
+  background: rgba(255,255,255,0.92);
+  border-color: var(--latte);
+  box-shadow: 0 4px 14px rgba(43,27,21,0.12);
+  transform: translateY(-1px);
+}
+
+#filters button:active,
+#sort button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+#filters button:focus-visible,
+#sort button:focus-visible {
+  outline: 2px solid var(--caramel);
+  outline-offset: 2px;
+}
+
+/* Selected / active state */
+#filters button.selected,
+#sort button.selected {
+  background: linear-gradient(135deg, var(--caramel), var(--accent));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(107,74,58,0.30);
+}
+
+#filters button.selected:hover,
+#sort button.selected:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+/* Reset buttons — subtle outlined style */
+#toReset,
+#fromReset {
+  background: transparent !important;
+  border-color: rgba(107,74,58,0.22) !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+}
+
+#toReset:hover,
+#fromReset:hover {
+  background: rgba(107,74,58,0.06) !important;
+  border-color: var(--latte) !important;
+  transform: translateY(-1px);
+}
+
+/* Context / direction badges inside buttons */
+#filters button .context,
+#sort button .direction {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.75;
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════
+   DIVIDER between sections
+   ═══════════════════════════════════════════ */
+#filters + #sort {
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  margin-top: 0;
+}
+
+/* ═══════════════════════════════════════════
+   TASK LIST
+   ═══════════════════════════════════════════ */
+#tasks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Individual task card ── */
+.task {
+  background: linear-gradient(160deg, #fff 0%, var(--cream) 100%);
+  border-radius: var(--radius);
+  border: 1px solid rgba(191,160,137,0.2);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: stretch;        /* let urgency fill full height */
+  min-height: 58px;
+  transition: box-shadow var(--transition), border-color var(--transition);
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-  transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
-  min-width: 120px;
+  padding: 0;                  /* urgency strip sits flush at the edge */
+}
+
+.task:hover {
+  box-shadow: 0 4px 18px rgba(43,27,21,0.10);
+  border-color: rgba(191,160,137,0.38);
+}
+
+/* ── Inner wrapper (injected by JS as direct child div) ── */
+.task > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  padding: 10px 13px 10px 10px;
+  min-width: 0;                /* required for text truncation inside flex */
+}
+
+/* ── Urgency strip — flush left edge ── */
+.urgency {
+  width: 6px;
+  min-width: 6px;
+  flex-shrink: 0;
+  border-radius: 0;            /* flush corners so it fills the card edge */
+  align-self: stretch;
+}
+
+.urgency.unurgent { background: #c8dcc8; }
+.urgency.low      { background: linear-gradient(180deg, #ffe49a, #ffd166); }
+.urgency.medium   { background: linear-gradient(180deg, #ffb87a, #ff9047); }
+.urgency.high     { background: linear-gradient(180deg, #ff7c5e, #e84c2e); }
+.urgency.urgent   { background: linear-gradient(180deg, #e84c2e, #b02010);
+                    box-shadow: 0 0 8px rgba(232,76,46,0.40); }
+
+/* ── Category icon bubble ── */
+.taskCategory {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: var(--radius-sm);
+  background: rgba(107,74,58,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.taskCategory svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--accent);
+}
+
+/* ── Checkbox ── */
+.taskCheck {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--latte);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition),
+              box-shadow var(--transition);
+}
+
+.taskCheck:hover {
+  border-color: var(--caramel);
+  box-shadow: 0 0 0 3px rgba(217,160,102,0.18);
+}
+
+.taskCheck:checked {
+  background: linear-gradient(135deg, var(--caramel), var(--accent));
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(107,74,58,0.28);
+}
+
+.taskCheck::after {
+  content: '';
+  display: block;
+  width: 11px;
+  height: 11px;
+  opacity: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23ffffff' d='M20.285 6.709a1 1 0 0 0-1.414-1.418L9 15.162l-3.87-3.87a1 1 0 0 0-1.414 1.414l4.577 4.577a1 1 0 0 0 1.414 0L20.285 6.71z'/></svg>");
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition: opacity var(--transition);
+}
+
+.taskCheck:checked::after { opacity: 1; }
+
+/* ── Task text — horizontally scrollable ── */
+.toDoTask {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--espresso);
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  cursor: default;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color var(--transition);
+}
+
+.task:hover .toDoTask {
+  scrollbar-color: var(--caramel) transparent;
+}
+
+.toDoTask::-webkit-scrollbar {
+  height: 3px;
+}
+
+.toDoTask::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toDoTask::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 99px;
+  transition: background var(--transition);
+}
+
+.task:hover .toDoTask::-webkit-scrollbar-thumb {
+  background: var(--caramel);
+}
+
+.taskCheck:checked ~ .toDoTask {
+  text-decoration: line-through;
+  color: var(--muted);
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+/* ── Meta chips (date / user) ── */
+.toDoDate,
+.toDoUser {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: rgba(107,74,58,0.07);
+  padding: 4px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Delete button ── */
+.removeTask {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--latte);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background var(--transition), color var(--transition);
   line-height: 1;
 }
 
-/* Hover / pointer feedback (subtle) */
-#filters button:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(43,27,21,0.12);
-  filter: brightness(1.02);
+.removeTask:hover {
+  background: rgba(200,58,42,0.1);
+  color: #c83a2a;
 }
 
-/* Active / pressed */
-#filters button:active{
-  transform: translateY(0);
-  box-shadow: 0 4px 10px rgba(43,27,21,0.08);
-  filter: brightness(0.98);
+/* Empty / not-found message */
+#tasks li:not(.task) p {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 0 8px;
+  font-weight: 500;
 }
 
-/* Focus for keyboard users */
-#filters button:focus{
-  outline: 3px solid rgba(107,74,58,0.14);
-  outline-offset: 3px;
-  box-shadow: 0 10px 26px rgba(107,74,58,0.06);
+/* ═══════════════════════════════════════════
+   ADD TASK FORM  (#newTask)
+   ═══════════════════════════════════════════ */
+#newTask {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 12px;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255,255,255,0.55);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Small icon inside button (if you use SVG or <i>) */
-#filters button svg, #filters button i{
-  width: 18px;
-  height: 18px;
-  fill: var(--espresso);
-  flex: 0 0 18px;
+/* Labels */
+#newTask span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+  text-transform: uppercase;
 }
 
-/* Variant: selected filter (toggle state) */
-#filters button.selected{
-  background: linear-gradient(90deg, var(--caramel), var(--accent));
+/* All inputs / selects share one style */
+#newTask input,
+#newTask select {
+  width: 100%;
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(191,160,137,0.35);
+  background: rgba(255,255,255,0.85);
+  color: var(--espresso);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#newTask input:focus,
+#newTask select:focus {
+  border-color: var(--caramel);
+  box-shadow: 0 0 0 3px rgba(217,160,102,0.18);
+  background: #fff;
+}
+
+#newTask input::placeholder {
+  color: var(--latte);
+  font-weight: 400;
+}
+
+/* Date input spans both columns */
+#taskDate {
+  grid-column: 1 / -1;
+}
+
+/* Add button spans both columns */
+#addTask {
+  grid-column: 1 / -1;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: linear-gradient(135deg, var(--caramel) 0%, var(--accent) 100%);
   color: #fff;
-  border-color: rgba(0,0,0,0.08);
-  box-shadow: 0 8px 20px rgba(43,27,21,0.14);
-}
-
-/* Responsive tweak */
-@media (max-width:900px){
-  #filters button{ min-width: 110px; padding: 9px 12px; border-radius:10px; }
-}
-
-/* --- MAIN CONTENT --- */
-main{
-  flex:1;
-  background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,250,244,0.6));
-  border-radius:var(--radius);
-  padding:18px;
-  box-shadow:var(--shadow);
-  min-height:400px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-/* --- TASK LIST --- */
-#tasks{
-  list-style:none;
-  margin:0;
-  padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  width:100%;
-}
-
-.task{
-  background:linear-gradient(180deg,var(--cream),#fff);
-  border-radius:12px;
-  padding:12px;
-  box-shadow:var(--glass-shadow);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  min-height:64px;
-  border:1px solid rgba(107,74,58,0.06);
-  width:100%;
-  transition:none; /* הסרת אנימציות */
-}
-
-/* הסרת hover על כרטיס משימה */
-.task:hover{
-  transform:none;
-  box-shadow:var(--glass-shadow);
-}
-
-.task > div{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  width:100%;
-}
-
-.taskCategory{
-  width:36px;
-  height:36px;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 36px;
-}
-
-.taskCategory svg{
-  width:24px;
-  height:24px;
-  fill:var(--accent);
-}
-
-/* --- CHECKBOX --- */
-.taskCheck{
-  appearance:none;
-  width:20px;
-  height:20px;
-  border-radius:6px;
-  border:2px solid var(--latte);
-  background:linear-gradient(180deg,#fff,var(--glass));
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  transition:none;
-  flex:0 0 22px;
-}
-
-.taskCheck::after{
-  content:"";
-  width:12px;
-  height:12px;
-  opacity:0;
-  transform:scale(0.8);
-  transition:none;
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:contain;
-}
-
-.taskCheck:checked{
-  background:linear-gradient(180deg,var(--accent),var(--mocha));
-  border-color:var(--mocha);
-  box-shadow:inset 0 2px 6px rgba(0,0,0,0.12);
-}
-
-.taskCheck:checked::after{
-  opacity:1;
-  transform:scale(1);
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23ffffff' d='M20.285 6.709a1 1 0 0 0-1.414-1.418L9 15.162l-3.87-3.87a1 1 0 0 0-1.414 1.414l4.577 4.577a1 1 0 0 0 1.414 0L20.285 6.71z'/></svg>");
-}
-
-/* --- TEXT --- */
-.toDoTask{
-  font-size:15px;
-  font-weight:600;
-  color:var(--espresso);
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  flex:1;
-}
-
-.taskCheck:checked ~ .toDoTask{
-  text-decoration:line-through;
-  color:var(--muted);
-  opacity:0.85;
-  font-weight:500;
-}
-
-.toDoDate , .toDoUser{
-  font-size:13px;
-  color:var(--muted);
-  background:rgba(107,74,58,0.06);
-  padding:6px 8px;
-  border-radius:8px;
-  flex:0 0 auto;
-}
-
-/* --- URGENCY --- */
-.urgency{
-  width:10px;
-  height:34px;
-  border-radius:8px;
-  flex:0 0 12px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.06);
-}
-
-.urgency.unurgent{background:linear-gradient(180deg,#e9efe9,#dfe7df)}
-.urgency.low{background:linear-gradient(180deg,#fff3d9,#ffe6b3)}
-.urgency.medium{background:linear-gradient(180deg,#ffd6a5,#ffb07a)}
-.urgency.high{background:linear-gradient(180deg,#ff9a76,#ff6b4a)}
-.urgency.urgent{background:linear-gradient(180deg,#ff6b4a,#c83a2a)}
-
-/* --- DELETE --- */
-.removeTask{
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(107,74,58,0.28);
+  transition: filter var(--transition), box-shadow var(--transition),
+              transform var(--transition);
 }
 
-/* --- FOOTER --- */
-footer{
-  padding:18px 28px;
-  text-align:center;
-  color:var(--muted);
-  font-size:13px;
+#addTask:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 22px rgba(107,74,58,0.36);
+  transform: translateY(-1px);
+}
+
+#addTask:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(107,74,58,0.22);
+}
+
+#addTask:focus-visible {
+  outline: 2px solid var(--caramel);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════ */
+footer {
+  text-align: center;
+  padding: 18px 16px 28px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ═══════════════════════════════════════════ */
+
+/* ── Mid: wrap form to single column on narrow viewports ── */
+@media (max-width: 540px) {
+  #newTask {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  #newTask span {
+    margin-top: 6px;
+  }
+
+  #newTask span:first-child {
+    margin-top: 0;
+  }
+
+  #taskDate,
+  #addTask {
+    grid-column: 1;
+  }
+
+  .toDoDate,
+  .toDoUser {
+    display: none;          /* hide meta on very small screens */
+  }
+
+  .task {
+    padding: 10px 11px;
+    gap: 9px;
+  }
+
+  .taskCategory {
+    display: none;          /* save space on mobile */
+  }
+}
+
+/* ── Large: give a bit more breathing room ── */
+@media (min-width: 860px) {
+  .flex {
+    padding: 48px 28px;
+  }
+
+  main {
+    gap: 28px;
+    padding: 32px;
+  }
+
+  #newTask {
+    grid-template-columns: auto 1fr auto 1fr;
+  }
+
+  /* Task input spans columns 2–4 */
+  #taskInput  { grid-column: 2 / 5; }
+  #taskDate   { grid-column: 2 / 5; }
+  #addTask    { grid-column: 1 / 5; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
 }
