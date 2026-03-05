@@ -10,7 +10,7 @@
 <body>
     <div class="flex">
     <main>
-        <div id="filters" class="flex">
+        <div id="filters">
             <h3>פילטרים:</h3>
             <button id="toUrgency"><div>לפי חשיבות</div><div class="context"></div></button>
             <button id="toCategory"><div>לפי קטגוריה</div><div class="context"></div></button>
@@ -19,7 +19,16 @@
             <button id="toReset"><div>אפס</div></button>
         </div>
 
+        <div id="sort">
+            <h3>מיין:</h3>
+            <button id="fromName"><div>לפי שמות</div><span class="direction"></span></button>
+            <button id="fromDate"><div>לפי תאריך</div><span class="direction"></span></button>
+            <button id="fromUrgency"><div>לפי חשיבות</div><span class="direction"></span></button>
+            <button id="fromReset"><div>אפס</div></button>
+        </div>
+
         <ul id="tasks">
+            <li></li>
             <li><div><p>לא נמצא מה שרצית... אתה בטוח שזה קיים?</p></div></li>
         </ul>
 

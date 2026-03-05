@@ -6,6 +6,7 @@ const tasksList = document.querySelector('#tasks');
 
 const STORAGE_KEY = 'todoTasks';
 const currentFilter = {key:'',value:'', nofilter:true};
+let currentSort = {key:'',order:false,nosort:true};
 const tasks = [];
 let currentTasks = [];
 let currentId;
@@ -14,7 +15,8 @@ function syncCurrentTasks() {
     currentTasks = tasks.slice();
     if (!currentFilter.nofilter)
         filterArray(currentTasks,currentFilter.key,currentFilter.value);
-    console.log(currentTasks);
+    if (!currentSort.nofilter)
+        sortArray(currentTasks,currentSort.key,currentSort.order);
 }
 
 // the Task class
@@ -35,6 +37,8 @@ class Task {
             high: 3,
             urgent: 4
         };
+
+        this.getUrgencyLevel = () => {return this.urgencyLevels[this.urgency]};
         this.checkUrgency = () => {
             if (this.urgency === "unurgent") { console.log(`task ${this.id} has been marked as Unurgent and has been skipped :)`); return;};
 
@@ -195,6 +199,7 @@ const iconOptions = [
     { value: 9, label: 'חברתי' }
 ];
 
+
 function populateSelect(selectId, options) {
     const select = document.getElementById(selectId);
     select.innerHTML = '';
@@ -206,6 +211,7 @@ function populateSelect(selectId, options) {
     });
 }
 
+
 populateSelect('taskUrgency', urgencyOptions);
 populateSelect('taskIcon', iconOptions);
 
@@ -215,6 +221,7 @@ const taskUser = document.getElementById('taskUser');
 const taskUrgency = document.getElementById('taskUrgency');
 const taskIcon = document.getElementById('taskIcon');
 const taskDate = document.getElementById('taskDate');
+
 
 function addTaskFromUI() {
     const textInput = (taskInput.value || '').trim();
@@ -238,15 +245,18 @@ function addTaskFromUI() {
     taskInput.focus();
 }    
 
+
 addButton.addEventListener('click', addTaskFromUI);
 taskInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') addTaskFromUI();
 });    
 
 
+// Filter tasks
 function filterArray(arr, key, value) {
     return arr.filter(obj => obj != null && obj[key] == value);
 }
+
 
 function resetFilters(){
     currentFilter.key = '';
@@ -254,16 +264,17 @@ function resetFilters(){
     currentFilter.nofilter = true;
     syncCurrentTasks();
     clearFilterContext();
+    clearFilterParams();
     displayTaskList(currentTasks);
 }
+
 
 function useFilter(filter){
     syncCurrentTasks();
     currentTasks = filterArray(currentTasks,filter.key ,filter.value);
-    currentFilter.key = filter.key;
-    currentFilter.value = filter.value;
     displayTaskList(currentTasks);
 }
+
 
 function getUniquePeople() {
     tasks.forEach(task => {
@@ -274,14 +285,54 @@ function getUniquePeople() {
     console.log(personList)
 }
 
+
 function writeFilter(selector){
     clearFilterContext();
-    selector.querySelector('.context').innerText = currentFilter.value;
-}
+    switch (selector){
+        case toCategory:
+            selector.querySelector('.context').innerHTML = iconOptions[currentFilter.value-1].label;
+            break;
+        default:
+            selector.querySelector('.context').innerText = currentFilter.value;
+}}
+
 
 function clearFilterContext(){
     document.querySelectorAll('.context').forEach(div => div.innerHTML = '');
 }
+
+
+function clearFilterParams(exept){
+    switch (exept){
+        case 'category':
+            currentUrgency = 0;
+            currentPerson = 0;
+            isComplete = false;
+            break;
+        case 'urgency':
+            currentCategory = 0;
+            currentPerson = 0;
+            isComplete = false;
+            break;
+        case 'person':
+            currentCategory = 0;
+            currentUrgency = 0;
+            isComplete = false;
+            break;
+        case 'complete':
+            currentCategory = 0;
+            currentUrgency = 0;
+            currentPerson = 0;
+            break;
+        default:
+            currentCategory = 0;
+            currentUrgency = 0;
+            currentPerson = 0;
+            isComplete = false;
+            break;
+    }
+}
+
 
 let personList = [];
 
@@ -296,8 +347,12 @@ const toComplete = document.getElementById('toComplete');
 const toPerson = document.getElementById('toPerson');
 const toReset = document.getElementById('toReset');
 
+
 toReset.addEventListener('click', () => {resetFilters();});
+
+
 toUrgency.addEventListener('click', () => {
+    clearFilterParams('urgency');
     currentFilter.nofilter = false;
     currentFilter.key = 'urgency';
     currentFilter.value = urgencyOptions[currentUrgency].value;
@@ -309,7 +364,9 @@ toUrgency.addEventListener('click', () => {
     useFilter(currentFilter);
 });
 
+
 toCategory.addEventListener('click', () => {
+    clearFilterParams('category');
     currentFilter.nofilter = false;
     currentFilter.key = 'category';
     currentFilter.value = iconOptions[currentCategory].value;
@@ -321,7 +378,9 @@ toCategory.addEventListener('click', () => {
     useFilter(currentFilter);
 });
 
+
 toComplete.addEventListener('click', () => {
+    clearFilterParams('complete');
     currentFilter.nofilter = false;
     currentFilter.key = 'checked';
     currentFilter.value = isComplete;
@@ -330,7 +389,9 @@ toComplete.addEventListener('click', () => {
     useFilter(currentFilter);
 });
 
+
 toPerson.addEventListener('click', () => {
+    clearFilterParams('person');
     currentFilter.nofilter = false;
     currentFilter.key = 'user';
     currentFilter.value = personList[currentPerson];
@@ -340,6 +401,106 @@ toPerson.addEventListener('click', () => {
         currentPerson++;
     writeFilter(toPerson);
     useFilter(currentFilter);
+});
+
+
+// Sort Tasks
+function sortArray(arr, key, order) {
+    const copy = arr.slice();
+    if (key === 'date') {
+    const today = new Date();
+    const toDate = s => {
+            const [y, m, d] = s.split('-').map(Number);
+            return new Date(Date.UTC(y, m - 1, d));
+        };
+        
+        const distance = s => Math.abs(toDate(s) - today);
+
+        if (order) copy.sort((a, b) => distance(a.date) - distance(b.date));
+        else copy.sort((a, b) => distance(b.date) - distance(a.date));
+        return copy;
+    }
+
+    if (key === 'user') {
+        if (order) copy.sort((a, b) => a.user.localeCompare(b.user));
+        else copy.sort((a, b) => b.user.localeCompare(a.user));
+        return copy;
+    }
+
+    if (key === 'urgency') {
+        if (order) copy.sort((a, b) => a.getUrgencyLevel() - b.getUrgencyLevel());
+        else copy.sort((a, b) => b.getUrgencyLevel() - a.getUrgencyLevel());
+        return copy;
+    }
+
+    if (key === 'id') {
+        copy.sort((a, b) => a.id - b.id);
+        return copy;
+    }
+return copy;
+}
+
+
+function useSort(sort){
+    currentTasks = sortArray(currentTasks,sort.key ,sort.order);
+    displayTaskList(currentTasks);
+}
+
+function writeSort(selector){
+    clearFilterSort();
+    selector.querySelector('.direction').innerText = currentSort.order ? '▲' : '▼';
+}
+
+function clearFilterSort(){
+    document.querySelectorAll('.direction').forEach(span => span.innerHTML = '');
+}
+
+function resetSort(){
+    currentSort.nosort = true;
+    currentSort.key = '';
+    currentSort.order = '';
+    document.querySelectorAll('.direction').forEach(span => span.innerHTML = '');
+    currentTasks = sortArray(currentTasks,'id');
+    displayTaskList(currentTasks);
+}
+
+// false = 'desc' true = 'asc' 
+let dateOrder = false;
+let nameOrder = false;
+let urgencyOrder = false;
+
+const fromUrgency = document.getElementById('fromUrgency');
+const fromDate = document.getElementById('fromDate');
+const fromName = document.getElementById('fromName');
+const fromReset = document.getElementById('fromReset');
+
+fromReset.addEventListener('click', resetSort);
+
+fromUrgency.addEventListener('click', () => {
+    currentSort.nosort = false;
+    currentSort.key = 'urgency';
+    currentSort.order = urgencyOrder;
+    urgencyOrder = !urgencyOrder;
+    writeSort(fromUrgency);
+    useSort(currentSort);
+});
+
+fromDate.addEventListener('click', () => {
+    currentSort.nosort = false;
+    currentSort.key = 'date';
+    currentSort.order = dateOrder;
+    dateOrder = !dateOrder;
+    writeSort(fromDate);
+    useSort(currentSort);
+});
+
+fromName.addEventListener('click', () => {
+    currentSort.nosort = false;
+    currentSort.key = 'user';
+    currentSort.order = nameOrder;
+    nameOrder = !nameOrder;
+    writeSort(fromName);
+    useSort(currentSort);
 });
 
 
